@@ -1,0 +1,44 @@
+room_A = "dirty"
+room_B = "dirty"
+curr = 'A' # Current room: 'A' or 'B'
+actions_taken = 0
+
+print("Vacuum cleaner simulation started.")
+
+while room_A == "dirty" or room_B == "dirty":
+    print(f"\nCurrent state: Room A: {room_A}, Room B: {room_B}, Current room: {curr}")
+
+    if curr == 'A':
+        if room_A == "dirty":
+            room_A = "clean"
+            print("Action: Suck (Room A cleaned)")
+        else: # room_A is clean, move to room B
+            curr = 'B'
+            print("Action: Move Right (to Room B)")
+    elif curr == 'B':
+        if room_B == "dirty":
+            room_B = "clean"
+            print("Action: Suck (Room B cleaned)")
+        else: # room_B is clean, move to room A
+            curr = 'A'
+            print("Action: Move Left (to Room A)")
+
+    actions_taken += 1
+
+print(f"\nFinal state: Room A: {room_A}, Room B: {room_B}")
+print(f"Both rooms are clean! Total actions taken: {actions_taken}")
+
+Output:
+Vacuum cleaner simulation started.
+
+Current state: Room A: dirty, Room B: dirty, Current room: A
+Action: Suck (Room A cleaned)
+
+Current state: Room A: clean, Room B: dirty, Current room: A
+Action: Move Right (to Room B)
+
+Current state: Room A: clean, Room B: dirty, Current room: B
+Action: Suck (Room B cleaned)
+
+Final state: Room A: clean, Room B: clean
+Both rooms are clean! Total actions taken: 3
