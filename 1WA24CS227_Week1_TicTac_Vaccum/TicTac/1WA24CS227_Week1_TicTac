@@ -35,7 +35,6 @@ def board_full():
     return " " not in board
 
 
-# Game starts
 while True:
     display_board()
 
@@ -58,7 +57,6 @@ while True:
         print("Draw!")
         break
 
-    # Computer move
     for i in range(9):
         if board[i] == " ":
             board[i] = "O"
