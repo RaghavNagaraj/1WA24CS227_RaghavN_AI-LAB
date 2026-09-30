@@ -1,0 +1,132 @@
+
+
+GOAL = (1, 0, 2,
+        3, 5, 7,
+        6, 4, 8)
+
+
+
+def print_puzzle(state):
+    for i in range(0, 9, 3):
+        print(state[i], state[i + 1], state[i + 2])
+    print()
+
+
+def get_neighbors(state):
+    neighbors = []
+
+    blank = state.index(0)
+
+    row = blank // 3
+    col = blank % 3
+
+    moves = [
+        (-1, 0), # UP
+        (1, 0), # DOWN
+        (0, -1), # LEFT
+        (0, 1) # RIGHT
+    ]
+
+    for dr, dc in moves:
+
+        new_row = row + dr
+        new_col = col + dc
+
+        if 0 <= new_row < 3 and 0 <= new_col < 3:
+
+            new_blank = new_row * 3 + new_col
+
+            new_state = list(state)
+
+            new_state[blank], new_state[new_blank] = \
+                new_state[new_blank], new_state[blank]
+
+            neighbors.append(tuple(new_state))
+
+    return neighbors
+
+def depth_limited_dfs(state, depth, path, visited):
+
+    if state == GOAL:
+        return path
+
+    if depth == 0:
+        return None
+
+    visited.add(state)
+
+    for next_state in get_neighbors(state):
+
+        if next_state not in visited:
+
+            result = depth_limited_dfs(
+                next_state,
+                depth - 1,
+                path + [next_state],
+                visited
+            )
+
+            if result is not None:
+                return result
+
+    return None
+
+
+def ids(start):
+
+    depth = 0
+
+    while True:
+
+        visited = set()
+
+        result = depth_limited_dfs(
+            start,
+            depth,
+            [start],
+            visited
+        )
+
+        if result is not None:
+            return result
+
+        depth = depth + 1
+
+start = (
+    1, 2, 3,
+    4, 0, 6,
+    7, 5, 8
+)
+
+print("INITIAL STATE")
+print_puzzle(start)
+
+print("GOAL STATE")
+print_puzzle(GOAL)
+
+
+# Start IDS
+path = ids(start)
+
+print("IDS RESULT")
+
+if path is not None:
+
+    print("Solution Found")
+
+else:
+    print("No solution found.")
+
+output:
+INITIAL STATE
+1 2 3
+4 0 6
+7 5 8
+
+GOAL STATE
+1 0 2
+3 5 7
+6 4 8
+
+IDS RESULT
+Solution Found
