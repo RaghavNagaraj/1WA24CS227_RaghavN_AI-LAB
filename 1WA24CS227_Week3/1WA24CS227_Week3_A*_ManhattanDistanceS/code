@@ -1,0 +1,235 @@
+
+def manhattan_distance(state, goal):
+    distance = 0
+
+    for i in range(3):
+        for j in range(3):
+
+            tile = state[i][j]
+
+            if tile == 0:
+                continue
+
+            for x in range(3):
+                for y in range(3):
+
+                    if goal[x][y] == tile:
+                        distance += abs(i - x) + abs(j - y)
+
+    return distance
+
+
+def get_neighbors(state):
+    neighbors = []
+
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] == 0:
+                x = i
+                y = j
+
+    moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+    for dx, dy in moves:
+        nx = x + dx
+        ny = y + dy
+
+        if 0 <= nx < 3 and 0 <= ny < 3:
+            new_state = [row[:] for row in state]
+
+            new_state[x][y], new_state[nx][ny] = \
+                new_state[nx][ny], new_state[x][y]
+
+            neighbors.append(new_state)
+
+    return neighbors
+
+
+def print_state(state):
+    for row in state:
+        print(*row)
+    print()
+
+
+def a_star(initial, goal):
+
+    open_list = []
+    closed_list = []
+
+    h = manhattan_distance(initial, goal)
+
+    open_list.append((h, 0, initial, []))
+
+    while open_list:
+
+        open_list.sort(key=lambda x: x[0])
+
+        f, g, current, path = open_list.pop(0)
+
+        if current == goal:
+            return path + [current]
+
+        current_tuple = tuple(tuple(row) for row in current)
+
+        if current_tuple in closed_list:
+            continue
+
+        closed_list.append(current_tuple)
+
+        for neighbor in get_neighbors(current):
+
+            neighbor_tuple = tuple(tuple(row) for row in neighbor)
+
+            if neighbor_tuple in closed_list:
+                continue
+
+            new_g = g + 1
+            new_h = manhattan_distance(neighbor, goal)
+            new_f = new_g + new_h
+
+            open_list.append(
+                (new_f, new_g, neighbor, path + [current])
+            )
+
+    return None
+
+
+# Input Initial State
+print("Enter Initial State row by row:")
+initial = []
+
+for i in range(3):
+    row = list(map(int, input("Enter row: ").split()))
+    initial.append(row)
+
+
+# Input Goal State
+print("\nEnter Goal State row by row:")
+goal = []
+
+for i in range(3):
+    row = list(map(int, input("Enter row: ").split()))
+    goal.append(row)
+
+
+# A* Search
+solution = a_star(initial, goal)
+
+
+# Display Result
+if solution:
+    print("\nSolution Found!")
+    print("Number of moves:", len(solution) - 1)
+
+    print("\nPath:")
+    for state in solution:
+        print_state(state)
+else:
+    print("No solution")
+
+output:
+Enter Initial State row by row:
+Enter row: 1 2 3
+Enter row: 4 5 6
+Enter row: 7 8 0
+
+Enter Goal State row by row:
+Enter row: 0 1 2
+Enter row: 3 4 5
+Enter row: 6 7 8
+
+Solution Found!
+Number of moves: 22
+
+Path:
+1 2 3
+4 5 6
+7 8 0
+
+1 2 3
+4 5 6
+7 0 8
+
+1 2 3
+4 0 6
+7 5 8
+
+1 2 3
+4 6 0
+7 5 8
+
+1 2 0
+4 6 3
+7 5 8
+
+1 0 2
+4 6 3
+7 5 8
+
+0 1 2
+4 6 3
+7 5 8
+
+4 1 2
+0 6 3
+7 5 8
+
+4 1 2
+6 0 3
+7 5 8
+
+4 1 2
+6 3 0
+7 5 8
+
+4 1 0
+6 3 2
+7 5 8
+
+4 0 1
+6 3 2
+7 5 8
+
+4 3 1
+6 0 2
+7 5 8
+
+4 3 1
+6 5 2
+7 0 8
+
+4 3 1
+6 5 2
+0 7 8
+
+4 3 1
+0 5 2
+6 7 8
+
+0 3 1
+4 5 2
+6 7 8
+
+3 0 1
+4 5 2
+6 7 8
+
+3 1 0
+4 5 2
+6 7 8
+
+3 1 2
+4 5 0
+6 7 8
+
+3 1 2
+4 0 5
+6 7 8
+
+3 1 2
+0 4 5
+6 7 8
+
+0 1 2
+3 4 5
+6 7 8
