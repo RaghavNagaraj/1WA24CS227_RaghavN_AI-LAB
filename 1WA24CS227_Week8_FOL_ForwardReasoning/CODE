@@ -1,0 +1,62 @@
+def is_variable(x):
+    return isinstance(x, str) and x.islower()
+
+def is_compound(x):
+    return isinstance(x, tuple)
+
+def occurs_check(var, x, subst):
+    if var == x:
+        return True
+    elif is_variable(x) and x in subst:
+        return occurs_check(var, subst[x], subst)
+    elif is_compound(x):
+        return any(occurs_check(var, arg, subst) for arg in x)
+    return False
+
+def apply_subst(subst, x):
+    if is_variable(x):
+        return apply_subst(subst, subst[x]) if x in subst else x
+    elif is_compound(x):
+        return tuple(apply_subst(subst, arg) for arg in x)
+    return x
+
+def unify(psi1, psi2, subst=None):
+    if subst is None:
+        subst = {}
+    if subst == "FAILURE":
+        return "FAILURE"
+    if psi1 == psi2:
+        return subst
+    elif is_variable(psi1):
+        if psi1 in subst:
+            return unify(subst[psi1], psi2, subst)
+        elif is_variable(psi2) and psi2 in subst:
+            return unify(psi1, subst[psi2], subst)
+        elif occurs_check(psi1, psi2, subst):
+            return "FAILURE"
+        else:
+            new_subst = subst.copy()
+            new_subst[psi1] = psi2
+            return new_subst
+    elif is_variable(psi2):
+        return unify(psi2, psi1, subst)
+    elif is_compound(psi1) and is_compound(psi2):
+        if psi1[0] != psi2[0] or len(psi1) != len(psi2):
+            return "FAILURE"
+        for a, b in zip(psi1[1:], psi2[1:]):
+            subst = unify(a, b, subst)
+            if subst == "FAILURE":
+                return "FAILURE"
+        return subst
+    else:
+        return "FAILURE"
+
+e1 = ("Knows", "John", "x")
+e2 = ("Knows", "y", ("Mother", "y"))
+
+result = unify(e1, e2)
+print("Substitutions:", result)
+
+
+OUTPUT:-
+Substitutions: {'y': 'John', 'x': ('Mother', 'y')}
