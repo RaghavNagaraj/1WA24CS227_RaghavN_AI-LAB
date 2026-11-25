@@ -1,0 +1,155 @@
+def alpha_beta(node, alpha, beta, maximizing):
+    
+    if isinstance(node, int):
+        print("Visited leaf:", node)
+        return node
+
+    if maximizing:
+        value = float('-inf')
+        print("\nMAX Node")
+
+        for i, child in enumerate(node):
+            result = alpha_beta(child, alpha, beta, False)
+
+            value = max(value, result)
+            alpha = max(alpha, value)
+
+            print("MAX value:", value)
+            print("Alpha:", alpha, "Beta:", beta)
+
+            if alpha >= beta:
+                print("Pruned subtree:", node[i+1:])
+                break
+
+        return value
+
+    else:
+        value = float('inf')
+        print("\nMIN Node")
+
+        for i, child in enumerate(node):
+            result = alpha_beta(child, alpha, beta, True)
+
+            value = min(value, result)
+            beta = min(beta, value)
+
+            print("MIN value:", value)
+            print("Alpha:", alpha, "Beta:", beta)
+
+            if alpha >= beta:
+                print("Pruned subtree:", node[i+1:])
+                break
+
+        return value
+
+def input_tree():
+
+    n = int(input("Enter number of children: "))
+
+    children = []
+
+    for i in range(n):
+        print("\nChild", i+1)
+
+        choice = input(
+            "Enter L for leaf node or N for internal node: "
+        ).upper()
+
+        if choice == 'L':
+            value = int(input("Enter leaf value: "))
+            children.append(value)
+
+        elif choice == 'N':
+            print("Enter child nodes:")
+            children.append(input_tree())
+
+        else:
+            print("Invalid choice. Try again.")
+            children.append(input_tree())
+
+    return children
+
+
+
+print("ALPHA-BETA PRUNING")
+print("-------------------")
+
+print("\nEnter the game tree.")
+print("Root node is assumed to be MAX.")
+
+tree = input_tree()
+
+alpha = float('-inf')
+beta = float('inf')
+
+print("\nStarting Alpha-Beta Pruning...\n")
+
+result = alpha_beta(tree, alpha, beta, True)
+
+print("\n-------------------")
+print("Final MAX value:", result)
+print("Alpha-Beta Pruning Completed")
+
+
+  output:-
+  ALPHA-BETA PRUNING
+-------------------
+
+Enter the game tree.
+Root node is assumed to be MAX.
+Enter number of children: 2
+
+Child 1
+Enter L for leaf node or N for internal node: N
+Enter child nodes:
+Enter number of children: 2
+
+Child 1
+Enter L for leaf node or N for internal node: L
+Enter leaf value: 10
+
+Child 2
+Enter L for leaf node or N for internal node: L
+Enter leaf value: 9
+
+Child 2
+Enter L for leaf node or N for internal node: N
+Enter child nodes:
+Enter number of children: 2
+
+Child 1
+Enter L for leaf node or N for internal node: L
+Enter leaf value: 14
+
+Child 2
+Enter L for leaf node or N for internal node: L
+Enter leaf value: 18
+
+Starting Alpha-Beta Pruning...
+
+
+MAX Node
+
+MIN Node
+Visited leaf: 10
+MIN value: 10
+Alpha: -inf Beta: 10
+Visited leaf: 9
+MIN value: 9
+Alpha: -inf Beta: 9
+MAX value: 9
+Alpha: 9 Beta: inf
+
+MIN Node
+Visited leaf: 14
+MIN value: 14
+Alpha: 9 Beta: 14
+Visited leaf: 18
+MIN value: 14
+Alpha: 9 Beta: 14
+MAX value: 14
+Alpha: 14 Beta: inf
+
+-------------------
+Final MAX value: 14
+Alpha-Beta Pruning Completed
